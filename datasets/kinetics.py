@@ -10,6 +10,12 @@ import copy
 from utils import load_value_file
 
 
+def class_map_save():
+    ff = open('labeltable.txt'. 'w')
+    for name, label in class_to_idx.items():
+        ff.write(label,"\t",name,"\n")
+    ff.close()
+
 def pil_loader(path):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
     with open(path, 'rb') as f:
@@ -90,6 +96,7 @@ def make_dataset(root_path, annotation_path, subset,
     idx_to_class = {}
     for name, label in class_to_idx.items():
         idx_to_class[label] = name
+    class_map_save()
 
     dataset = []
     for i in range(len(video_names)):
@@ -111,7 +118,8 @@ def make_dataset(root_path, annotation_path, subset,
             'video': video_path,
             'segment': [begin_t, end_t],
             'n_frames': n_frames,
-            'video_id': video_names[i][:-14].split('/')[1]
+#            'video_id': video_names[i][:-14].split('/')[1]
+            'video_id': video_names[i].split('/')[1]
         }
         if len(annotations) != 0:
             sample['label'] = class_to_idx[annotations[i]['label']]

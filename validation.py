@@ -5,11 +5,22 @@ import sys
 
 from utils import AverageMeter, calculate_accuracy
 
+def conf_matrix(outputs,targets):
+    print('Confusion matrix epoch {}'.format(epoch))
+
+    for i in range(targets):
+        confmat[targets[i]] = torch.add(confmat[target[i]],1,outputs[i])
+
+    return 
 
 def val_epoch(epoch, data_loader, model, criterion, opt, logger):
     print('validation at epoch {}'.format(epoch))
 
     model.eval()
+
+    if opt.conf_matrix:
+        confmat = torch.Tensor(opt.n_classes, n_classes)
+
 
     batch_time = AverageMeter()
     data_time = AverageMeter()
@@ -26,6 +37,8 @@ def val_epoch(epoch, data_loader, model, criterion, opt, logger):
         targets = Variable(targets, volatile=True)
         outputs = model(inputs)
         loss = criterion(outputs, targets)
+        if opt.conf_matrix:
+            conf_matrix(outputs, targets)
         acc = calculate_accuracy(outputs, targets)
 
         losses.update(loss.data[0], inputs.size(0))
@@ -49,3 +62,4 @@ def val_epoch(epoch, data_loader, model, criterion, opt, logger):
     })
 
     return losses.avg
+
