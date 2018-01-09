@@ -124,9 +124,6 @@ if __name__ == '__main__':
         if not opt.no_train and not opt.no_val:
             scheduler.step(validation_loss)
 
-    if opt.conf_matrix:
-        conf_matrix()
-
     if opt.test:
         spatial_transform = Compose([Scale(int(opt.sample_size / opt.scale_in_test)),
                                      CornerCrop(opt.sample_size, 

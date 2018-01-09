@@ -1,26 +1,27 @@
 import torch
+from torch import nn
 from torch.autograd import Variable
 import time
 import sys
 
 from utils import AverageMeter, calculate_accuracy
 
-def conf_matrix(outputs,targets):
-    print('Confusion matrix epoch {}'.format(epoch))
+def conf_matrix(epoch, outputs,targets, confmat):
+    for i in range(len(targets)):
+        xx = targets[i].data[0]
+        confmat[xx] = torch.add(confmat[xx],1.0,outputs[i].data)
 
-    for i in range(targets):
-        confmat[targets[i]] = torch.add(confmat[target[i]],1,outputs[i])
-
-    return 
+    return confmat
 
 def val_epoch(epoch, data_loader, model, criterion, opt, logger):
-    print('validation at epoch {}'.format(epoch))
-
     model.eval()
 
     if opt.conf_matrix:
-        confmat = torch.Tensor(opt.n_classes, n_classes)
-
+        print('Confusion matrix epoch {}'.format(epoch))
+        confmat = torch.cuda.FloatTensor(opt.n_classes, opt.n_classes)
+        sm = nn.Softmax(1)
+    else:
+        print('validation at epoch {}'.format(epoch))
 
     batch_time = AverageMeter()
     data_time = AverageMeter()
@@ -38,7 +39,8 @@ def val_epoch(epoch, data_loader, model, criterion, opt, logger):
         outputs = model(inputs)
         loss = criterion(outputs, targets)
         if opt.conf_matrix:
-            conf_matrix(outputs, targets)
+            probs = sm(outputs)
+            confmat = conf_matrix(epoch, probs, targets, confmat)
         acc = calculate_accuracy(outputs, targets)
 
         losses.update(loss.data[0], inputs.size(0))
@@ -60,6 +62,16 @@ def val_epoch(epoch, data_loader, model, criterion, opt, logger):
         'loss': losses.avg,
         'acc': accuracies.avg
     })
+
+    if opt.conf_matrix:
+        cmfile = open('conf-matrix.txt','w')
+        torch.save(confmat, 'conf_matrix.pt')
+        for ii in range(opt.n_classes):
+            for jj in range(opt.n_classes):
+                cmfile.write(str(confmat[ii][jj]))
+                cmfile.write('\t')
+            cmfile.write('\n')
+        cmfile.close()
 
     return losses.avg
 

@@ -10,10 +10,11 @@ import copy
 from utils import load_value_file
 
 
-def class_map_save():
-    ff = open('labeltable.txt'. 'w')
+def class_map_save(class_to_idx):
+    ff = open('labeltable.txt','w')
     for name, label in class_to_idx.items():
-        ff.write(label,"\t",name,"\n")
+        strs = [str(label),'\t',name,'\n']
+        ff.writelines(strs)
     ff.close()
 
 def pil_loader(path):
@@ -96,7 +97,7 @@ def make_dataset(root_path, annotation_path, subset,
     idx_to_class = {}
     for name, label in class_to_idx.items():
         idx_to_class[label] = name
-    class_map_save()
+    class_map_save(class_to_idx)
 
     dataset = []
     for i in range(len(video_names)):

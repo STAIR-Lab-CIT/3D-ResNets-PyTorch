@@ -20,11 +20,16 @@ EOF
 # this is for yoshikawa datasets (after removing duplicates)
 # batch_size 128 -> unhandled cuda error
 python3 main.py \
-       --conf_matrix true \
-       --root_path /data4/STAIR_Actions_forHDD_v20170626 \
+       --conf_matrix \
+       --sample_duration 60 \
+       --n_epochs 201 \
+       --no_train \
+       --root_path /data4/SA4HDDv20170626 \
        --video_path jpg \
        --annotation_path 3dresnet_STAIRACTIONS.json \
-       --result_path results \
-       --dataset kinetics --pretrain_path /data4/SA4HDD20171220/save.pth \
+       --result_path results_60 \
+       --dataset kinetics \
+       --resume_path /data4/SA4HDDv20170626/results_60/save_200.pth \
+       --n_finetune_classes 100 \
        --n_classes 100 --sample_size 112 --n_val_samples 3 \
        --model_depth 34 --batch_size 64 --n_threads 8 --checkpoint 5 --manual_seed 13
