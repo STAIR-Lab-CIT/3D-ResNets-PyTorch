@@ -57,11 +57,12 @@ def val_epoch(epoch, data_loader, model, criterion, opt, logger):
                   epoch, i + 1, len(data_loader), batch_time=batch_time,
                   data_time=data_time, loss=losses, acc=accuracies))
 
-    logger.log({
-        'epoch': epoch,
-        'loss': losses.avg,
-        'acc': accuracies.avg
-    })
+    if not opt.conf_matrix:
+        logger.log({
+            'epoch': epoch,
+            'loss': losses.avg,
+            'acc': accuracies.avg
+        })
 
     if opt.conf_matrix:
         cmfile = open('conf-matrix.txt','w')
