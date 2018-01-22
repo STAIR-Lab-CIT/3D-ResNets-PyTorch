@@ -21,6 +21,7 @@ from utils import Logger
 from train import train_epoch
 from validation import val_epoch
 import test
+import predict
 
 if __name__ == '__main__':
     opt = parse_opts()
@@ -138,3 +139,7 @@ if __name__ == '__main__':
         test_loader = torch.utils.data.DataLoader(test_data, batch_size=opt.batch_size,
                                                   shuffle=False, num_workers=opt.n_threads, pin_memory=True)
         test.test(test_loader, model, opt, test_data.class_names)
+
+    if opt.predict:
+        predict.loop(model, opt)
+        
