@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from torch.autograd import Variable
+# from torch.autograd import Variable
 import time
 import sys
 
@@ -37,14 +37,13 @@ def val_epoch(epoch, data_loader, model, criterion, opt, logger):
 
         if not opt.no_cuda:
             targets = targets.cuda(async=True)
-        if torch.__version__ == '0.4.1':
-            with torch.no_grad():
-                outputs = model(inputs)
-        else:
-            inputs = Variable(inputs, volatile=True)
-            targets = Variable(targets, volatile=True)
+        with torch.no_grad():
             outputs = model(inputs)
-        loss = criterion(outputs, targets)
+            loss = criterion(outputs, targets)
+#       inputs = Variable(inputs, volatile=True)
+#       targets = Variable(targets, volatile=True)
+#       outputs = model(inputs)
+
         if opt.conf_matrix:
             probs = sm(outputs)
             confmat = conf_matrix(epoch, probs, targets, confmat)

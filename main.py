@@ -18,9 +18,15 @@ from target_transforms import ClassLabel, VideoID
 from target_transforms import Compose as TargetCompose
 from dataset import get_training_set, get_validation_set, get_test_set
 from utils import Logger
-from train import train_epoch
-from validation import val_epoch
-import test
+
+if torch.__version__ == '0.4.1':
+    from train04 import train_epoch
+    from validation04 import val_epoch
+    import test04
+else:
+    from train import train_epoch
+    from validation import val_epoch
+    import test
 # import predict
 
 if __name__ == '__main__':
