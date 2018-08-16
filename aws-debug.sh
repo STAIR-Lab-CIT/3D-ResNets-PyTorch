@@ -19,7 +19,7 @@ EOF
 
 # this is for yoshikawa datasets (after removing duplicates)
 # batch_size 128 -> unhandled cuda error
-python3 main.py \
+python  main.py \
        --sample_duration 16 \
        --root_path /data4/SA4HDDv20170626 \
        --video_path jpg \
@@ -27,4 +27,4 @@ python3 main.py \
        --result_path results_resnet152_debug \
        --dataset kinetics --model resnet \
        --n_classes 100 --sample_size 112 --n_val_samples 3 \
-       --model_depth 152 --batch_size 64 --n_threads 8 --checkpoint 5 --manual_seed 13
+       --model_depth 34 --batch_size 64 --n_threads 8 --checkpoint 5 --manual_seed 13
