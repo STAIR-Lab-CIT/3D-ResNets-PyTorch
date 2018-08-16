@@ -4,7 +4,7 @@ from torch import nn
 import time
 import sys
 
-from utils import AverageMeter, calculate_accuracy
+from utils04 import AverageMeter, calculate_accuracy
 
 def conf_matrix(epoch, outputs,targets, confmat):
     for i in range(len(targets)):
