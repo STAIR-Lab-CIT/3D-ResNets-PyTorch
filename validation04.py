@@ -4,14 +4,11 @@ from torch import nn
 import time
 import sys
 
-from utils import AverageMeter, calculate_accuracy
+from utils04 import AverageMeter, calculate_accuracy
 
 def conf_matrix(epoch, outputs,targets, confmat):
     for i in range(len(targets)):
-        if torch.__version__ == '0.4.1':
-            xx = targets[i].item()
-        else:
-            xx = targets[i].data[0]
+        xx = targets[i].item()
         confmat[xx] = torch.add(confmat[xx],1.0,outputs[i].data)
 
     return confmat
@@ -49,10 +46,7 @@ def val_epoch(epoch, data_loader, model, criterion, opt, logger):
             confmat = conf_matrix(epoch, probs, targets, confmat)
         acc = calculate_accuracy(outputs, targets)
 
-        if torch.__version__ == '0.4.1':
-            losses.update(loss.item(), inputs.size(0))
-        else:
-            losses.update(loss.data[0], inputs.size(0))
+        losses.update(loss.item(), inputs.size(0))
         accuracies.update(acc, inputs.size(0))
 
         batch_time.update(time.time() - end_time)
