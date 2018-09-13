@@ -18,7 +18,7 @@ from target_transforms import ClassLabel, VideoID
 from target_transforms import Compose as TargetCompose
 from dataset import get_training_set, get_validation_set, get_test_set
 
-if torch.__version__ == '0.5.0a0':
+if torch.__version__ == '0.4.1':
     from train04 import train_epoch
     from validation04 import val_epoch
     import test04
@@ -88,7 +88,8 @@ if __name__ == '__main__':
             batch_size=opt.batch_size,
             shuffle=True,
             num_workers=opt.n_threads,
-            pin_memory=True)
+            pin_memory=True,
+            drop_last=True)
         train_logger = Logger(
             os.path.join(opt.result_path, 'train.log'),
             ['epoch', 'loss', 'acc', 'lr'])
@@ -124,7 +125,8 @@ if __name__ == '__main__':
             batch_size=opt.batch_size,
             shuffle=False,
             num_workers=opt.n_threads,
-            pin_memory=True)
+            pin_memory=True,
+            drop_last=True)
         val_logger = Logger(
             os.path.join(opt.result_path, 'val.log'), ['epoch', 'loss', 'acc'])
 
@@ -140,12 +142,12 @@ if __name__ == '__main__':
 
     print('run')
     for i in range(opt.begin_epoch, opt.n_epochs + 1):
-        if not opt.no_train:
-            train_epoch(i, train_loader, model, criterion, optimizer, opt,
-                        train_logger, train_batch_logger)
         if not opt.no_val:
             validation_loss = val_epoch(i, val_loader, model, criterion, opt,
                                         val_logger)
+        if not opt.no_train:
+            train_epoch(i, train_loader, model, criterion, optimizer, opt,
+                        train_logger, train_batch_logger)
 
         if not opt.no_train and not opt.no_val:
             scheduler.step(validation_loss)

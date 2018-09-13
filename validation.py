@@ -33,6 +33,9 @@ def val_epoch(epoch, data_loader, model, criterion, opt, logger):
 
     end_time = time.time()
     for i, (inputs, targets) in enumerate(data_loader):
+#        if i >= len(data_loader)-1:
+#            print('avoiding last loop trap and exit')
+#            break
         data_time.update(time.time() - end_time)
 
         if not opt.no_cuda:
@@ -67,6 +70,7 @@ def val_epoch(epoch, data_loader, model, criterion, opt, logger):
                   epoch, i + 1, len(data_loader), batch_time=batch_time,
                   data_time=data_time, loss=losses, acc=accuracies))
 
+    print('val done')
     if not opt.conf_matrix:
         logger.log({
             'epoch': epoch,
