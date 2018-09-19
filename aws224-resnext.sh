@@ -20,11 +20,12 @@ EOF
 # this is for yoshikawa datasets (after removing duplicates)
 # batch_size 128 -> unhandled cuda error
 python3 main.py \
-       --sample_duration 16 \
-       --root_path /data4/SA4HDDv20170626 \
-       --video_path jpg \
-       --annotation_path 3dresnet_STAIRACTIONS.json \
-       --result_path results_resnext101_224 \
-       --dataset kinetics --model resnext \
-       --n_classes 100 --sample_size 224 --n_val_samples 3 \
-       --model_depth 101 --batch_size 64 --n_threads 8 --checkpoint 5 --manual_seed 13
+       --sample_duration 16 --sample_size 224 \
+       --initial_scale 1.5 --n_scales 7 --scale_step 0.834 --train_crop 'random' \
+       --model resnext --model_depth 101 \
+       --root_path /data4/SA4HDDv20170626 --video_path jpg --annotation_path 3dresnet_STAIRACTIONS.json \
+       --result_path results_resnext101_224_zoomout \
+       --dataset kinetics \
+       --n_classes 100 --n_val_samples 3 \
+       --batch_size 128 --n_threads 8 --checkpoint 5 --manual_seed 13
+
