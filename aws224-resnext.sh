@@ -30,4 +30,3 @@ python3 main.py \
        --projection 7 \
        --n_classes 100 --sample_size 224 --n_val_samples 3 \
        --model_depth 152 --batch_size 64 --n_threads 8 --checkpoint 5 --manual_seed 13
-
