@@ -21,7 +21,7 @@ EOF
 # batch_size 128 -> unhandled cuda error
 python3 main.py \
        --conf_matrix \
-       --sample_duration 60 \
+       --sample_duration 30 \
        --n_epochs 201 \
        --no_train \
        --root_path /data4/SA4HDDv20170626 \

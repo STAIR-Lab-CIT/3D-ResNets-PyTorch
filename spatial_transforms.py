@@ -10,6 +10,8 @@ try:
 except ImportError:
     accimage = None
 
+import cv2
+
 
 class Compose(object):
     """Composes several transforms together.
@@ -364,3 +366,28 @@ class MultiScaleRandomCrop(object):
         self.scale = self.scales[random.randint(0, len(self.scales) - 1)]
         self.tl_x = random.random()
         self.tl_y = random.random()
+
+
+class PersepectivePj(object):
+
+    def __init__(self, offsetlist):
+        self.offsetlist = offsetlist
+        
+    def __call__(self, pil_img):
+        cv2img = np.asarray(pil_img)
+
+        hh, ww,_ = cv2img.shape
+
+        pts1 = np.float32([[self.offset,0],[ww-self.offset,0],[0,hh],[ww,hh]])
+        pts2 = np.float32([[0,0],[ww,0],[0,hh],[ww,hh]])
+
+        # 透視変換の行列を求める
+        M = cv2.getPerspectiveTransform(pts1,pts2)
+
+        # 変換行列を用いて画像の透視変換
+        pjimg = cv2.warpPerspective(cv2img,M,(ww,hh))
+
+        return Image.fromarray(pjimg)
+
+    def randomize_parameters(self):
+        self.offset = self.offsetlist[random.randint(0,len(self.offsetlist) - 1)]

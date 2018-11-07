@@ -12,7 +12,7 @@ from model import generate_model
 from mean import get_mean, get_std
 from spatial_transforms import (
     Compose, Normalize, Scale, CenterCrop, CornerCrop, MultiScaleCornerCrop,
-    MultiScaleRandomCrop, RandomHorizontalFlip, ToTensor)
+    MultiScaleRandomCrop, RandomHorizontalFlip, ToTensor, PersepectivePj)
 from temporal_transforms import LoopPadding, TemporalRandomCrop
 from target_transforms import ClassLabel, VideoID
 from target_transforms import Compose as TargetCompose
@@ -43,6 +43,9 @@ if __name__ == '__main__':
     opt.scales = [opt.initial_scale]
     for i in range(1, opt.n_scales):
         opt.scales.append(opt.scales[-1] * opt.scale_step)
+    pj_offsets = []
+    for i in range(opt.projection):
+        pj_offsets.append(i*int(opt.sample_size*0.05))
     opt.arch = '{}-{}'.format(opt.model, opt.model_depth)
     opt.mean = get_mean(opt.norm_value, dataset=opt.mean_dataset)
     opt.std = get_std(opt.norm_value)
@@ -67,6 +70,7 @@ if __name__ == '__main__':
 
     if not opt.no_train:
         assert opt.train_crop in ['random', 'corner', 'center']
+        pj_method = PersepectivePj(pj_offsets)
         if opt.train_crop == 'random':
             crop_method = MultiScaleRandomCrop(opt.scales, opt.sample_size)
         elif opt.train_crop == 'corner':
@@ -77,6 +81,7 @@ if __name__ == '__main__':
         spatial_transform = Compose([
             crop_method,
             RandomHorizontalFlip(),
+            pj_method,
             ToTensor(opt.norm_value), norm_method
         ])
         temporal_transform = TemporalRandomCrop(opt.sample_duration)
@@ -142,13 +147,13 @@ if __name__ == '__main__':
 
     print('run')
     for i in range(opt.begin_epoch, opt.n_epochs + 1):
-        if not opt.no_val:
-            validation_loss = val_epoch(i, val_loader, model, criterion, opt,
-                                        val_logger)
         if not opt.no_train:
             train_epoch(i, train_loader, model, criterion, optimizer, opt,
                         train_logger, train_batch_logger)
 
+        if not opt.no_val:
+            validation_loss = val_epoch(i, val_loader, model, criterion, opt,
+                                        val_logger)
         if not opt.no_train and not opt.no_val:
             scheduler.step(validation_loss)
 
