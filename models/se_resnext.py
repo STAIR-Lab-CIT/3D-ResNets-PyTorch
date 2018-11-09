@@ -37,8 +37,8 @@ class Selayer(nn.Module):
     def __init__(self, inplanes):
         super(Selayer, self).__init__()
         self.global_avgpool = nn.AdaptiveAvgPool3d(1)
-        self.conv1 = nn.Conv3d(inplanes, inplanes / 16, kernel_size=1, stride=1)
-        self.conv2 = nn.Conv3d(inplanes / 16, inplanes, kernel_size=1, stride=1)
+        self.conv1 = nn.Conv3d(inplanes, int(inplanes / 16), kernel_size=1, stride=1)
+        self.conv2 = nn.Conv3d(int(inplanes / 16), inplanes, kernel_size=1, stride=1)
         self.relu = nn.ReLU(inplace=True)
         self.sigmoid = nn.Sigmoid()
 
