@@ -1,17 +1,18 @@
 import torch
 from torch import nn
 
-from models import resnet, pre_act_resnet, wide_resnet, resnext, densenet
+# from models import resnet, pre_act_resnet, wide_resnet, resnext, densenet, se_resnext
 
 
 def generate_model(opt):
     assert opt.model in [
-        'resnet', 'preresnet', 'wideresnet', 'resnext', 'densenet'
+        'resnet', 'preresnet', 'wideresnet', 'resnext', 'densenet', 'se_resnext'
     ]
 
     if opt.model == 'resnet':
         assert opt.model_depth in [10, 18, 34, 50, 101, 152, 200]
 
+        from models import resnet
         from models.resnet import get_fine_tuning_parameters
 
         if opt.model_depth == 10:
@@ -59,6 +60,7 @@ def generate_model(opt):
     elif opt.model == 'wideresnet':
         assert opt.model_depth in [50]
 
+        from models import wide_resnet
         from models.wide_resnet import get_fine_tuning_parameters
 
         if opt.model_depth == 50:
@@ -71,6 +73,7 @@ def generate_model(opt):
     elif opt.model == 'resnext':
         assert opt.model_depth in [50, 101, 152]
 
+        from models import resnext
         from models.resnext import get_fine_tuning_parameters
 
         if opt.model_depth == 50:
@@ -94,9 +97,37 @@ def generate_model(opt):
                 cardinality=opt.resnext_cardinality,
                 sample_size=opt.sample_size,
                 sample_duration=opt.sample_duration)
+    elif opt.model == 'se_resnext':
+        assert opt.model_depth in [50, 101, 152]
+
+        from models import se_resnext
+        from models.se_resnext import get_fine_tuning_parameters
+
+        if opt.model_depth == 50:
+            model = se_resnext.resnet50(
+                num_classes=opt.n_classes,
+                shortcut_type=opt.resnet_shortcut,
+                cardinality=opt.resnext_cardinality,
+                sample_size=opt.sample_size,
+                sample_duration=opt.sample_duration)
+        elif opt.model_depth == 101:
+            model = se_resnext.resnet101(
+                num_classes=opt.n_classes,
+                shortcut_type=opt.resnet_shortcut,
+                cardinality=opt.resnext_cardinality,
+                sample_size=opt.sample_size,
+                sample_duration=opt.sample_duration)
+        elif opt.model_depth == 152:
+            model = se_resnext.resnet152(
+                num_classes=opt.n_classes,
+                shortcut_type=opt.resnet_shortcut,
+                cardinality=opt.resnext_cardinality,
+                sample_size=opt.sample_size,
+                sample_duration=opt.sample_duration)
     elif opt.model == 'preresnet':
         assert opt.model_depth in [18, 34, 50, 101, 152, 200]
 
+        from models import pre_act_resnet
         from models.pre_act_resnet import get_fine_tuning_parameters
 
         if opt.model_depth == 18:
@@ -138,6 +169,7 @@ def generate_model(opt):
     elif opt.model == 'densenet':
         assert opt.model_depth in [121, 169, 201, 264]
 
+        from models import densenet
         from models.densenet import get_fine_tuning_parameters
 
         if opt.model_depth == 121:
