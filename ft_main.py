@@ -1,3 +1,5 @@
+# Fine Tune Model
+
 import os
 import sys
 import json
@@ -55,12 +57,30 @@ if __name__ == '__main__':
 
     torch.manual_seed(opt.manual_seed)
 
+    if opt.fine_tune:
+        print('loading pretrained model {}'.format(opt.fine_tune))
+    else:
+        print("ERROR: This is for FINNE TUNING ONLY")
+        break
+
+
+    # making kinetics model
+    opt.n_classes = 400
     model, parameters = generate_model(opt)
+    # loading pretrained model
+    checkpoint = torch.load(opt.fine_tune)
+    assert opt.arch == checkpoint['arch']
+    model.load_state_dict(checkpoint['state_dict'])
+    # replacing the last fc layer
+    opt.n_classes = 100
+    num_ftrs = model.fc.in_features
+    model.fc = nn.Linear(num_ftrs, opt.n_classes)
+    ###################
+    
     print(model)
     criterion = nn.CrossEntropyLoss()
     if not opt.no_cuda:
         criterion = criterion.cuda()
-
     if opt.no_mean_norm and not opt.std_norm:
         norm_method = Normalize([0, 0, 0], [1, 1, 1])
     elif not opt.std_norm:
