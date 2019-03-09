@@ -61,7 +61,7 @@ if __name__ == '__main__':
         print('loading pretrained model {}'.format(opt.fine_tune))
     else:
         print("ERROR: This is for FINNE TUNING ONLY")
-        break
+        sys.exit()
 
 
     # making kinetics model
