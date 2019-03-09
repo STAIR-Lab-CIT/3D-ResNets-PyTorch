@@ -2,6 +2,7 @@ import argparse
 
 def parse_opts():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--fine_tune', default='', type=str, help='path to a pretrained model')
     parser.add_argument('--root_path', default='/root/data/ActivityNet', type=str, help='Root directory path of data')
     parser.add_argument('--video_path', default='video_kinetics_jpg', type=str, help='Directory path of Videos')
     parser.add_argument('--annotation_path', default='kinetics.json', type=str, help='Annotation file path')

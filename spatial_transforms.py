@@ -382,12 +382,16 @@ class PersepectivePj(object):
         pts2 = np.float32([[0,0],[ww,0],[0,hh],[ww,hh]])
 
         # 透視変換の行列を求める
-        M = cv2.getPerspectiveTransform(pts1,pts2)
+        if self.p < 0.5:
+            M = cv2.getPerspectiveTransform(pts1,pts2)
+        else:
+            M = cv2.getPerspectiveTransform(pts2,pts1)
 
-        # 変換行列を用いて画像の透視変換
+            # 変換行列を用いて画像の透視変換
         pjimg = cv2.warpPerspective(cv2img,M,(ww,hh))
 
         return Image.fromarray(pjimg)
 
     def randomize_parameters(self):
         self.offset = self.offsetlist[random.randint(0,len(self.offsetlist) - 1)]
+        self.p = random.random()
