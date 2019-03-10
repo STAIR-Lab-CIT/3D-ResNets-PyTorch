@@ -67,14 +67,16 @@ if __name__ == '__main__':
     # making kinetics model
     opt.n_classes = 400
     model, parameters = generate_model(opt)
+    print(model)
     # loading pretrained model
     checkpoint = torch.load(opt.fine_tune)
     assert opt.arch == checkpoint['arch']
     model.load_state_dict(checkpoint['state_dict'])
     # replacing the last fc layer
     opt.n_classes = 100
-    num_ftrs = model.fc.in_features
-    model.fc = nn.Linear(num_ftrs, opt.n_classes)
+    num_ftrs = model.module.fc.in_features
+    model.module.fc = nn.Linear(num_ftrs, opt.n_classes)
+    model = model.cuda()
     ###################
     
     print(model)
