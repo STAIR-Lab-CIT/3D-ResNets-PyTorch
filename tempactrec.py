@@ -7,7 +7,7 @@ from torch import nn
 from torch import optim
 from torch.optim import lr_scheduler
 
-from opts import parse_opts
+from opts_tempact import parse_opts
 from model import generate_model
 from mean import get_mean, get_std
 from spatial_transforms import (
