@@ -7,11 +7,11 @@ def parse_opts():
     parser.add_argument('--video_path', default='video_kinetics_jpg', type=str, help='Directory path of Videos')
     parser.add_argument('--annotation_path', default='kinetics.json', type=str, help='Annotation file path')
     parser.add_argument('--result_path', default='results', type=str, help='Result directory path')
-    parser.add_argument('--dataset', default='kinetics', type=str, help='Used dataset (activitynet | kinetics | ucf101 | hmdb51)')
+    parser.add_argument('--dataset', default='kinetics_tempact', type=str, help='Used dataset (activitynet | kinetics | ucf101 | hmdb51)') ##
     parser.add_argument('--n_classes', default=400, type=int, help='Number of classes (activitynet: 200, kinetics: 400, ucf101: 101, hmdb51: 51)')
     parser.add_argument('--n_finetune_classes', default=400, type=int, help='Number of classes for fine-tuning. n_classes is set to the number when pretraining.')
     parser.add_argument('--sample_size', default=112, type=int, help='Height and width of inputs')
-    parser.add_argument('--sample_duration', default=16, type=int, help='Temporal duration of inputs')
+    parser.add_argument('--sample_duration', default=16, type=int, help='Temporal duration of inputs') # must be 16
     parser.add_argument('--initial_scale', default=1.0, type=float, help='Initial scale for multiscale cropping')
     parser.add_argument('--n_scales', default=5, type=int, help='Number of scales for multiscale cropping')
     parser.add_argument('--scale_step', default=0.84089641525, type=float, help='Scale step for multiscale cropping')
@@ -29,7 +29,7 @@ def parse_opts():
     parser.set_defaults(nesterov=False)
     parser.add_argument('--optimizer', default='sgd', type=str, help='Currently only support SGD')
     parser.add_argument('--lr_patience', default=10, type=int, help='Patience of LR scheduler. See documentation of ReduceLROnPlateau.')
-    parser.add_argument('--batch_size', default=128, type=int, help='Batch Size')
+    parser.add_argument('--batch_size', default=1, type=int, help='Batch Size') # must be 1
     parser.add_argument('--n_epochs', default=200, type=int, help='Number of total epochs to run')
     parser.add_argument('--begin_epoch', default=1, type=int, help='Training begins at this epoch. Previous trained model indicated by resume_path is loaded.')
     parser.add_argument('--n_val_samples', default=3, type=int, help='Number of validation samples for each activity')

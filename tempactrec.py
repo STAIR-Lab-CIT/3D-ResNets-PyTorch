@@ -75,7 +75,7 @@ if __name__ == '__main__':
             RandomHorizontalFlip(),
             ToTensor(opt.norm_value), norm_method
         ])
-        temporal_transform = TemporalRandomCrop(opt.sample_duration)
+        temporal_transform = TemporalRandomCrop(opt.sample_duration*9)  # 9 segments 
         target_transform = ClassLabel()
         training_data = get_training_set(opt, spatial_transform,
                                          temporal_transform, target_transform)

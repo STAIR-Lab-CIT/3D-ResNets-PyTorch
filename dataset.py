@@ -1,4 +1,4 @@
-from datasets.kinetics import Kinetics
+from datasets.kinetics import Kinetics, Kinetics_tempact
 from datasets.activitynet import ActivityNet
 from datasets.ucf101 import UCF101
 from datasets.hmdb51 import HMDB51
@@ -10,6 +10,14 @@ def get_training_set(opt, spatial_transform, temporal_transform,
 
     if opt.dataset == 'kinetics':
         training_data = Kinetics(
+            opt.video_path,
+            opt.annotation_path,
+            'training',
+            spatial_transform=spatial_transform,
+            temporal_transform=temporal_transform,
+            target_transform=target_transform)
+    elif opt.dataset == 'kinetics_tempact':
+        training_data = Kinetics_tempact(
             opt.video_path,
             opt.annotation_path,
             'training',

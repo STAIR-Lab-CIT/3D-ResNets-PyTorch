@@ -19,6 +19,13 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
 
     end_time = time.time()
     for i, (inputs, targets) in enumerate(data_loader):
+        # inputs = tensor of 1x3x144x112x112
+        # targets = tensor of 1x1 [[label]] --> 9 x 1
+        inputs=torch.split(inputs[0],16,1)
+        inputs=torch.stack(inputs,0)
+        targets=torch.zeros(9).fill_(targets[0])
+        ###
+        
         data_time.update(time.time() - end_time)
 
         if not opt.no_cuda:
@@ -32,7 +39,6 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
         # average = torch.sum(outputs,0)/batchsize
 
         outputs = torch.sum(outputs,0).unsqueeze(0)
-
 
         loss = criterion(outputs, targets)
         acc = calculate_accuracy(outputs, targets)
