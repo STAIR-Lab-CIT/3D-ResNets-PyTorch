@@ -19,11 +19,12 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
 
     end_time = time.time()
     for i, (inputs, targets) in enumerate(data_loader):
-        # inputs = tensor of 1x3x144x112x112
-        # targets = tensor of 1x1 [[label]] --> 9 x 1
-        inputs=torch.split(inputs[0],16,1)
-        inputs=torch.stack(inputs,0)
-        targets=torch.zeros(9).fill_(targets[0])
+        # inputs = tensor of batch_size x 3x144x112x112  (144 = 16x9)
+        # targets = tensor of batch_size x 1
+        batch_size = opt.batxh_size
+        inputs=torch.split(inputs,16,2)
+        inputs=torch.stack(inputs,0)    # 9 x batch_size x 3x16x112x112
+        inputs=inputs.view(9*batch_size,3,114,112,112)  #(9*batch_size) x 3x16x112x112
         ###
         
         data_time.update(time.time() - end_time)
@@ -32,15 +33,18 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
             targets = targets.cuda(async=True)
         inputs = inputs.cuda()
         inputs.requires_grad_()
-        outputs = model(inputs)
+        outputs = model(inputs)     # outputs = 9*batch_size x n_classes
+        
+        # outputs = choose_max_for_each_sample(outputs)
+        res = []
+        indx = [i*batch_size for i in range(9)]
+        for ii in range(batch_size):
+            indx=indx+1
+            pos = torch.argmax(outputs[indx,:])
+            row = pos/opt.n_classes
+            res.append(indx+row*batch_size)
 
-        # outputs = n_batch x n_classes --> 1 x n_classes
-        # just sum = torch.sum(outputs,0).
-        # average = torch.sum(outputs,0)/batchsize
-
-        outputs = torch.sum(outputs,0).unsqueeze(0)
-
-        loss = criterion(outputs, targets)
+        loss = criterion(outputs[res,:], targets)
         acc = calculate_accuracy(outputs, targets)
 
         losses.update(loss.item(), inputs.size(0))
