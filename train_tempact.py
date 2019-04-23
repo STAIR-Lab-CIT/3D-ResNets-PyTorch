@@ -21,7 +21,7 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
     for i, (inputs, targets) in enumerate(data_loader):
         # inputs = tensor of batch_size x 3x144x112x112  (144 = 16x9)
         # targets = tensor of batch_size x 1
-        batch_size = opt.batxh_size
+        batch_size = opt.batch_size
         inputs=torch.split(inputs,16,2)
         inputs=torch.stack(inputs,0)    # 9 x batch_size x 3x16x112x112
         inputs=inputs.view(9*batch_size,3,114,112,112)  #(9*batch_size) x 3x16x112x112
@@ -37,12 +37,13 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
         
         # outputs = choose_max_for_each_sample(outputs)
         res = []
-        indx = [i*batch_size for i in range(9)]
+        indx_ = [i*batch_size for i in range(9)]
+        indx = torch.LongTensor(indx_)
         for ii in range(batch_size):
-            indx=indx+1
             pos = torch.argmax(outputs[indx,:])
             row = pos/opt.n_classes
-            res.append(indx+row*batch_size)
+            res.append(ii+row*batch_size)
+            indx=indx+1
 
         loss = criterion(outputs[res,:], targets)
         acc = calculate_accuracy(outputs, targets)

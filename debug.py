@@ -16,24 +16,45 @@ def parse_opts():
     parser.add_argument('--n_classes', default=400, type=int, help='Number of classes (activitynet: 200, kinetics: 400, ucf101: 101, hmdb51: 51)')
     parser.add_argument('--sample_size', default=224, type=int, help='Height and width of inputs')
     parser.add_argument('--sample_duration', default=16, type=int, help='Temporal duration of inputs')
-    parser.add_argument('--model', default='resnext', type=str, help='(resnet | preresnet | wideresnet | resnext | densenet | ')
-    parser.add_argument('--model_depth', default=101, type=int, help='Depth of resnet (10 | 18 | 34 | 50 | 101)')
-    parser.add_argument('--resnet_shortcut', default='B', type=str, help='Shortcut type of resnet (A | B)')
-    parser.add_argument('--wide_resnet_k', default=2, type=int, help='Wide resnet k')
-    parser.add_argument('--resnext_cardinality', default=32, type=int, help='ResNeXt cardinality')
-    parser.add_argument('--manual_seed', default=1, type=int, help='Manually set random seed')
-    parser.add_argument('--no_cuda', action='store_true', help='If true, cuda is not used.')
-    parser.set_defaults(no_cuda=False)
-    parser.add_argument('--pretrain_path', default='', type=str, help='Pretrained model (.pth)')
+    parser.add_argument('--batch_size', default=7, type=int, help='b size')
 
     args = parser.parse_args()
 
     return args
 
 if __name__ == '__main__':
-    opt = parse_opts()
+        opt = parse_opts()
 
-    print(opt)
+        # for i, (inputs, targets) in enumerate(data_loader):
+        # inputs = tensor of batch_size x 3x144x112x112  (144 = 16x9)
+        inputs = torch.rand(opt.batch_size,3,114,10,10)
+        # targets = tensor of batch_size x 1
+        targets = torch.randint(0,99,(opt.batch_size,1))
 
-    model, parameters = generate_model(opt)
-    print(model)
+        batch_size = opt.batch_size
+        inputs=torch.split(inputs,16,2)
+        inputs=torch.stack(inputs,0)    # 9 x batch_size x 3x16x112x112
+        inputs=inputs.view(9*batch_size,3,114,112,112)  #(9*batch_size) x 3x16x112x112
+        ###
+        
+        data_time.update(time.time() - end_time)
+
+        if not opt.no_cuda:
+            targets = targets.cuda(async=True)
+        inputs = inputs.cuda()
+        inputs.requires_grad_()
+        outputs = model(inputs)     # outputs = 9*batch_size x n_classes
+        
+        # outputs = choose_max_for_each_sample(outputs)
+        res = []
+        indx = [i*batch_size for i in range(9)]
+        for ii in range(batch_size):
+            indx=indx+1
+            pos = torch.argmax(outputs[indx,:])
+            row = pos/opt.n_classes
+            res.append(indx+row*batch_size)
+
+        loss = criterion(outputs[res,:], targets)
+        acc = calculate_accuracy(outputs, targets)
+
+        losses.update(loss.item(), inputs.size(0))
