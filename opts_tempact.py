@@ -29,7 +29,7 @@ def parse_opts():
     parser.set_defaults(nesterov=False)
     parser.add_argument('--optimizer', default='sgd', type=str, help='Currently only support SGD')
     parser.add_argument('--lr_patience', default=10, type=int, help='Patience of LR scheduler. See documentation of ReduceLROnPlateau.')
-    parser.add_argument('--batch_size', default=1, type=int, help='Batch Size') # must be 1
+    parser.add_argument('--batch_size', default=8, type=int, help='Batch Size') # must be 1
     parser.add_argument('--n_epochs', default=200, type=int, help='Number of total epochs to run')
     parser.add_argument('--begin_epoch', default=1, type=int, help='Training begins at this epoch. Previous trained model indicated by resume_path is loaded.')
     parser.add_argument('--n_val_samples', default=3, type=int, help='Number of validation samples for each activity')

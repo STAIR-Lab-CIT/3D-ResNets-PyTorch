@@ -9,5 +9,5 @@ python3 tempactrec.py \
        --model resnext --model_depth 101 \
        --initial_scale 1.5 --n_scales 7 --scale_step 0.834 --train_crop 'random' \
        --n_classes 100 --sample_size 112 --n_val_samples 3 \
-       --batch_size 8 --n_threads 8 --checkpoint 5 --manual_seed 13
+       --batch_size 4 --n_threads 8 --checkpoint 5 --manual_seed 13
 

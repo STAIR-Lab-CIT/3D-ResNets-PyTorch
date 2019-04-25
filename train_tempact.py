@@ -24,7 +24,7 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
         batch_size = opt.batch_size
         inputs=torch.split(inputs,16,2)
         inputs=torch.stack(inputs,0)    # 9 x batch_size x 3x16x112x112
-        inputs=inputs.view(9*batch_size,3,114,112,112)  #(9*batch_size) x 3x16x112x112
+        inputs=inputs.view(9*batch_size,3,16,112,112)  #(9*batch_size) x 3x16x112x112
         ###
         
         data_time.update(time.time() - end_time)
@@ -46,7 +46,7 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
             indx=indx+1
 
         loss = criterion(outputs[res,:], targets)
-        acc = calculate_accuracy(outputs, targets)
+        acc = calculate_accuracy(outputs[res,:], targets)
 
         losses.update(loss.item(), inputs.size(0))
         accuracies.update(acc, inputs.size(0))
