@@ -98,6 +98,7 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
     for name, label in class_to_idx.items():
         idx_to_class[label] = name
     class_map_save(class_to_idx)
+    # deb_image_loader = get_default_image_loader()    ## debug  ######################
 
     dataset = []
     for i in range(len(video_names)):
@@ -110,7 +111,11 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
 
         n_frames_file_path = os.path.join(video_path, 'n_frames')
         n_frames = int(load_value_file(n_frames_file_path))
-        if n_frames <= 0:
+        if n_frames <= 80:
+            print('Skipping too short video {}'.format(video_path))
+            continue
+        if n_frames > 300:
+            print('Skipping too long video {}'.format(video_path))
             continue
 
         begin_t = 1
@@ -122,6 +127,12 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
 #            'video_id': video_names[i][:-14].split('/')[1]
             'video_id': video_names[i].split('/')[1]
         }
+        ## debug begin ##############################
+        # print(video_path)
+        # video_loader(video_path,[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],deb_image_loader)
+        # print(".")
+        ## debug end ##########################
+
         if len(annotations) != 0:
             sample['label'] = class_to_idx[annotations[i]['label']]
         else:
@@ -191,6 +202,7 @@ class Kinetics(data.Dataset):
         """
         path = self.data[index]['video']
 
+        # print(path) # debug
         frame_indices = self.data[index]['frame_indices']
         if self.temporal_transform is not None:
             frame_indices = self.temporal_transform(frame_indices)
