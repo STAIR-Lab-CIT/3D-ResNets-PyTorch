@@ -1,3 +1,4 @@
+import cv2
 import os
 import sys
 import json
@@ -13,22 +14,17 @@ from mean import get_mean, get_std
 from spatial_transforms import (
     Compose, Normalize, Scale, CenterCrop, CornerCrop, MultiScaleCornerCrop,
     MultiScaleRandomCrop, RandomHorizontalFlip, ToTensor, PersepectivePj)
-from temporal_transforms import LoopPadding, TemporalRandomCrop
+from temporal_transforms import LoopPadding, TemporalRandomCrop, TemporalRandomJumpingCrop
 from target_transforms import ClassLabel, VideoID
 from target_transforms import Compose as TargetCompose
 from dataset import get_training_set, get_validation_set, get_test_set
 
-if torch.__version__ != '0.3.1':
-    from train04 import train_epoch
-    from validation04 import val_epoch
-    import test04
-    from utils04 import Logger
-else:
-    from train import train_epoch
-    from validation import val_epoch
-    import test
-    from utils import Logger
+from train import train_epoch
+from validation import val_epoch
+import test
+from utils import Logger
 # import predict
+
 
 if __name__ == '__main__':
     opt = parse_opts()
@@ -84,7 +80,8 @@ if __name__ == '__main__':
             pj_method,
             ToTensor(opt.norm_value), norm_method
         ])
-        temporal_transform = TemporalRandomCrop(opt.sample_duration)
+        # temporal_transform = TemporalRandomCrop(opt.sample_duration)
+        temporal_transform = TemporalRandomJumpingCrop(opt.sample_duration)
         target_transform = ClassLabel()
         training_data = get_training_set(opt, spatial_transform,
                                          temporal_transform, target_transform)
@@ -121,7 +118,10 @@ if __name__ == '__main__':
             CenterCrop(opt.sample_size),
             ToTensor(opt.norm_value), norm_method
         ])
-        temporal_transform = LoopPadding(opt.sample_duration)
+        # temporal_transform = LoopPadding(opt.sample_duration)
+        temporal_transform = TemporalRandomJumpingCrop(opt.sample_duration)
+        opt.n_val_samples = 1
+        ###
         target_transform = ClassLabel()
         validation_data = get_validation_set(
             opt, spatial_transform, temporal_transform, target_transform)

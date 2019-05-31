@@ -1,5 +1,5 @@
 import torch
-from torch.autograd import Variable
+# from torch.autograd import Variable
 import torch.nn.functional as F
 import time
 import os
@@ -39,8 +39,9 @@ def test(data_loader, model, opt, class_names):
     for i, (inputs, targets) in enumerate(data_loader):
         data_time.update(time.time() - end_time)
 
-        inputs = Variable(inputs, volatile=True)
-        outputs = model(inputs)
+#       inputs = Variable(inputs, volatile=True)
+        with torch.no_grad():
+            outputs = model(inputs)
         if not opt.no_softmax_in_test:
             outputs = F.softmax(outputs)
 

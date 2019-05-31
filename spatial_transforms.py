@@ -1,3 +1,4 @@
+import cv2
 import random
 import math
 import numbers
@@ -10,7 +11,6 @@ try:
 except ImportError:
     accimage = None
 
-import cv2
 
 
 class Compose(object):

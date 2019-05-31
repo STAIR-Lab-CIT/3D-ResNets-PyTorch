@@ -1,5 +1,5 @@
 import torch
-from torch.autograd import Variable
+# from torch.autograd import Variable
 import time
 import os
 import sys
@@ -24,16 +24,17 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
 
         if not opt.no_cuda:
             targets = targets.cuda(async=True)
-        inputs = Variable(inputs)
-        targets = Variable(targets)
+        inputs = inputs.cuda()
+#       inputs = Variable(inputs)   # for 0.3.1
+#       targets = Variable(targets) # for 0.3.1
+        inputs.requires_grad_()
+#       targets.requires_grad_()
         outputs = model(inputs)
         loss = criterion(outputs, targets)
         acc = calculate_accuracy(outputs, targets)
 
-        if torch.__version__ == '0.4.1':
-            losses.update(loss.item(), inputs.size(0))
-        else:
-            losses.update(loss.data[0], inputs.size(0)) # for 0.3.1
+        losses.update(loss.item(), inputs.size(0))
+#         losses.update(loss.data[0], inputs.size(0)) # for 0.3.1
         accuracies.update(acc, inputs.size(0))
 
         optimizer.zero_grad()

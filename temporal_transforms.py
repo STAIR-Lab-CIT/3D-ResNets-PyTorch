@@ -110,3 +110,54 @@ class TemporalRandomCrop(object):
             out.append(index)
 
         return out
+
+
+class TemporalRandomJumpingCrop(object):
+    """Temporally crop the given frame indices at a random location,
+       and ALSO RANDOMLY SKIP INTERMEDIATE FRAMES.
+
+    If the number of frames is less than the size,
+    loop the indices as many times as necessary to satisfy the size.
+
+    Args:
+        size (int): Desired output size of the crop.
+    """
+
+    def __init__(self, size):
+        self.size = size
+        self.random_choice = 0.5
+        self.random_skip = 0.5
+
+    def __call__(self, frame_indices):
+        """
+        Args:
+            frame_indices (list): frame indices to be cropped.
+        Returns:
+            list: Cropped frame indices.
+
+        1st, decide whether apply or not.
+        2nd, if not, return cropped frames
+             otherwise skip and crop
+
+        """
+
+        double_frame_indices = frame_indices+frame_indices
+        random_dice = random.random()
+        
+        rand_end = max(0, len(frame_indices) - self.size - 1)
+        begin_index = random.randint(0, rand_end)
+        end_index = min(begin_index + self.size, len(frame_indices))
+
+        if random_dice < self.random_choice:  # do random frame skipping
+            xout = double_frame_indices[begin_index:]
+            out = []
+            i = 0
+            while len(out) < self.size:
+                if random.random() > self.random_skip:  # no skip
+                    out.append(xout[i])
+                i+=1
+        else:                                 # nothing happens
+            out = double_frame_indices[begin_index:begin_index+self.size]
+
+        return out
+    
